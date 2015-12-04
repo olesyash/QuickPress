@@ -54,9 +54,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fr"
-        android:layout_marginStart="43dp"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/linearLayout">
+        android:layout_marginEnd="34dp"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="36dp">
 
         <LinearLayout
             android:orientation="vertical"
@@ -94,11 +95,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pressButtonString"
-            android:id="@+id/button"
-            android:background="#ff1917"
-            android:layout_alignParentTop="true"
+            android:id="@+id/pressButton"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="145dp" />
+            android:background="#ff1917" />
     </RelativeLayout>
 
 </RelativeLayout>

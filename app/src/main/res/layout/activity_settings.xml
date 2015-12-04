@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.olesya.quickpress.SettingsActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:weightSum="1"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="33dp"
+            android:gravity="center"
+            android:text="@string/levelTextViewString"
+            android:id="@+id/levelTextView" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="33dp"
+            android:gravity="center"
+            android:text="@string/complexityTextView"
+            android:id="@+id/Complexity" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.07"
+        android:weightSum="1"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/linearLayout4"
+        android:layout_alignParentStart="false"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="33dp"
+            android:gravity="center"
+            android:text="@string/levelValueTextViewString"
+            android:id="@+id/levelTextView"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/linearLayout4" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="33dp"
+            android:text="@string/complexityValieTextView"
+            android:id="@+id/complexityTextView"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/linearLayout4" />
+    </LinearLayout>
+
+</RelativeLayout>

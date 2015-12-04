@@ -1,6 +1,19 @@
 <resources>
     <string name="app_name">QuickPress</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="bestResultButtonText">Best Result:</string>
+    <string name="recentResultButtonText">Recent Result:</string>
+    <string name="settingsButtonText">Settings</string>
+    <string name="startButtonText">Start</string>
+    <string name="bestResultTextViewString">00:000</string>
+    <string name="recentResultTextView">00:000</string>
+    <string name="pressButtonString" />
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="levelTextViewString">Level</string>
+    <string name="complexityTextView">Complexity</string>
+    <string name="levelValueTextViewString">1</string>
+    <string name="complexityValieTextView">0</string>
 </resources>
