@@ -20,14 +20,16 @@
             android:layout_height="33dp"
             android:gravity="center"
             android:text="@string/levelTextViewString"
-            android:id="@+id/levelTextView" />
+            android:id="@+id/levelTextView"
+            android:layout_weight="0.02" />
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="33dp"
             android:gravity="center"
             android:text="@string/complexityTextView"
-            android:id="@+id/Complexity" />
+            android:id="@+id/Complexity"
+            android:layout_weight="0.02" />
 
     </LinearLayout>
 
@@ -35,30 +37,29 @@
         android:orientation="vertical"
         android:layout_width="150dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.07"
         android:weightSum="1"
         android:layout_alignParentEnd="true"
         android:id="@+id/linearLayout4"
         android:layout_alignParentStart="false"
         android:gravity="center_vertical">
 
-        <TextView
+        <EditText
             android:layout_width="fill_parent"
-            android:layout_height="33dp"
-            android:gravity="center"
-            android:text="@string/levelValueTextViewString"
-            android:id="@+id/levelTextView"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/linearLayout4" />
+            android:layout_height="wrap_content"
 
-        <TextView
+            android:hint="@string/levelValueTextViewString"
+            android:id="@+id/levelValueTextView"
+            android:layout_alignStart="@+id/linearLayout4"
+            android:textAllCaps="true" />
+
+        <EditText
             android:layout_width="fill_parent"
-            android:layout_height="33dp"
-            android:text="@string/complexityValieTextView"
-            android:id="@+id/complexityTextView"
-            android:gravity="center_vertical|center_horizontal"
+            android:layout_height="wrap_content"
+            android:hint="@string/complexityValueTextViewString"
+            android:id="@+id/complexityValueTextView"
             android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/linearLayout4" />
+            />
+
     </LinearLayout>
 
 </RelativeLayout>

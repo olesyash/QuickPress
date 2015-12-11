@@ -15,5 +15,5 @@
     <string name="levelTextViewString">Level</string>
     <string name="complexityTextView">Complexity</string>
     <string name="levelValueTextViewString">1</string>
-    <string name="complexityValieTextView">0</string>
+    <string name="complexityValueTextViewString">0</string>
 </resources>
