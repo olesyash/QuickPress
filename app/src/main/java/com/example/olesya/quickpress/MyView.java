@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -18,7 +19,7 @@ public class MyView extends View{
     private Paint paint;
     private Path path;
     private final static float RADIUS = 50;
-    public float x,y;
+    public float x = 0 ,y = 0 ;
     private Random rand;
     public MyView(Context context) {
         super(context);
@@ -39,15 +40,16 @@ public class MyView extends View{
     {
         paint = new Paint();
         paint.setColor(Color.RED);
-        //setWillNotDraw(false);
         paint.setStyle(Paint.Style.FILL);
         path = new Path();
 
     }
     public void getRandomCircle(){
         rand = new Random();
-        x = rand.nextInt(100);
-        y = rand.nextInt(800);
+        do  {
+            x = rand.nextInt((int) (width - RADIUS));
+            y = rand.nextInt((int) (height - RADIUS));
+       }    while (x < RADIUS || y < RADIUS);
     }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -63,10 +65,9 @@ public class MyView extends View{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         getRandomCircle();
-        //path.moveTo(right, top);
+        path.reset();
         path.addCircle(x, y, RADIUS, Path.Direction.CCW);
         path.close();
         canvas.drawPath(path, paint);
-        //path.addOval(right,top,right+width,top+height,null);
     }
 }

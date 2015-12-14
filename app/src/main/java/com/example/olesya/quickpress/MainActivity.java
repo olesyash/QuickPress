@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         settingsButton = (Button)findViewById(R.id.settingsButton);
         startButton = (Button)findViewById(R.id.startButton);
         context = this;
-        myView = new MyView(this);
+        myView = (MyView)findViewById(R.id.myView);
+       // myView = new MyView(this);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //myView.getRandomCircle();
-                //myView.postInvalidate();
-                myView = new MyView(getApplicationContext());
+                myView.invalidate();
+                // /myView.postInvalidate();
+                //myView = new MyView(getApplicationContext());
                 Toast.makeText(context, "x=" + myView.x + " y=" + myView.y, Toast.LENGTH_SHORT).show();
             }
         });
