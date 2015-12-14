@@ -11,11 +11,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     Button settingsButton, startButton;
     Context context;
-
+    MyView myView;
 
 
     @Override
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton = (Button)findViewById(R.id.settingsButton);
         startButton = (Button)findViewById(R.id.startButton);
         context = this;
+        myView = new MyView(this);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +34,16 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(context, SettingsActivity.class);
                 startActivity(intent);
 
+            }
+        });
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //myView.getRandomCircle();
+                //myView.postInvalidate();
+                myView = new MyView(getApplicationContext());
+                Toast.makeText(context, "x=" + myView.x + " y=" + myView.y, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -62,8 +74,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        myView.invalidate();
+    }
 }
