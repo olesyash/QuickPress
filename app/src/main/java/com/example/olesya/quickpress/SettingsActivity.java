@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,41 +18,39 @@ import java.util.ArrayList;
 
 
 public class SettingsActivity extends AppCompatActivity {
-    static final int MAX_LEVEL = 10;
+    private static final int MIN_LEVEL = 1;
+    private static final int MAX_LEVEL = 10;
+    private static final int MIN_COMPLEXITY = 0;
+    private static final int MAX_COMPLEXITY = 4;
 
-    TextView levelTextView, complexityTextView;
-    Context context;
-    SharedPreferences memory;
-    SharedPreferences.Editor edit;
-    Button saveButton;
+    private EditText levelTextView, complexityTextView;
+    private Context context;
+    private SharedPreferences memory;
+    private SharedPreferences.Editor edit;
+    private Button saveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         memory = getSharedPreferences("setting", MODE_PRIVATE);
-        edit = memory.edit();
-        levelTextView = (TextView)findViewById(R.id.levelValueTextView);
-        complexityTextView = (TextView)findViewById(R.id.complexityValueTextView);
+
+        levelTextView = (EditText)findViewById(R.id.levelValueTextView);
+        complexityTextView = (EditText)findViewById(R.id.complexityValueTextView);
         saveButton = (Button)findViewById(R.id.saveButton);
-        levelTextView.setText(""+memory.getInt("level",1));
-        complexityTextView.setText(""+memory.getInt("complexity",0));
+
+        levelTextView.setText("" + memory.getInt("level", MIN_LEVEL));
+        complexityTextView.setText(""+memory.getInt("complexity", MIN_COMPLEXITY));
         context = this;
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                edit.putInt("level", Integer.parseInt(levelTextView.getText().toString()));
-                edit.putInt("complexity", Integer.parseInt(complexityTextView.getText().toString()));
-                edit.apply();
+                saveData();
             }
         });
 
-        levelTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "here", Toast.LENGTH_SHORT).show();
-            }
-        });
+
     }
 
     @Override
@@ -74,5 +73,31 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveData()
+    {
+        int level, complexity;
+        edit = memory.edit();
+        level = Integer.parseInt(levelTextView.getText().toString());
+        complexity = Integer.parseInt(complexityTextView.getText().toString());
+        if(level < MIN_LEVEL || level > MAX_LEVEL) {
+            Toast.makeText(context, "Level has to be between " + MIN_LEVEL + " to " + MAX_LEVEL, Toast.LENGTH_SHORT).show();
+            levelTextView.setText("" + memory.getInt("level", MIN_LEVEL));
+        }
+        else
+        {
+            edit.putInt("level", level);
+        }
+        if(complexity < MIN_COMPLEXITY || complexity > MAX_COMPLEXITY) {
+            Toast.makeText(context, "Complexity has to be between " + MIN_COMPLEXITY + " to " + MAX_COMPLEXITY, Toast.LENGTH_SHORT).show();
+            complexityTextView.setText(""+ memory.getInt("complexity", MIN_COMPLEXITY));
+        }
+        else
+        {
+            edit.putInt("complexity", complexity);
+        }
+        Toast.makeText(context, "Settings saved", Toast.LENGTH_SHORT).show();
+        edit.apply();
     }
 }

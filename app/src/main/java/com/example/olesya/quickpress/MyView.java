@@ -7,8 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -16,16 +21,20 @@ import java.util.Random;
  * Created by itamar on 12-Dec-15.
  */
 public class MyView extends View{
-    private int height,width,top,right;
+    private int height, width, top, right, bx, by;
     private Paint paint;
     private Path path;
     private final static float RADIUS = 50;
-    public float[] x;
-    public float[] y;
+    private final static float bw = 120, bh = 80;
+    private float[] x;
+    private float[] y;
+    private RectF rect;
     private Random rand;
+    private Context context;
+
     private SharedPreferences memory;
     private SharedPreferences.Editor edit;
-    int level,complexity;
+    int level, complexity;
     public MyView(Context context) {
         super(context);
 //        edit = memory.edit();
@@ -45,19 +54,29 @@ public class MyView extends View{
     private void init(AttributeSet attrs, int defStyle, Context context)
     {
         memory = context.getSharedPreferences("setting", context.MODE_PRIVATE);
+        rect = new RectF();
         paint = new Paint();
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);
         path = new Path();
+        context = getContext();
 
     }
-    public void getRandomCircle(int i){
+    private void getRandomCircle(int i){
         rand = new Random();
         do  {
             x[i] = rand.nextInt((int) (width - RADIUS));
             y[i] = rand.nextInt((int) (height - RADIUS));
        }    while (x[i] < RADIUS || y[i] < RADIUS);
     }
+
+    private void getRandomButton()
+    {
+        rand = new Random();
+        bx = rand.nextInt((int)(width - bw));
+        by = rand.nextInt((int)(height - bh));
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -73,6 +92,7 @@ public class MyView extends View{
         super.onDraw(canvas);
         level = memory.getInt("level",1);
         complexity = memory.getInt("complexity",0);
+
         x = new float[complexity+1];
         y = new float[complexity+1];
         path.reset();
@@ -82,7 +102,38 @@ public class MyView extends View{
             path.addCircle(x[i], y[i], RADIUS, Path.Direction.CCW);
         }
 
+        getRandomButton();
+
+        rect.top = by;
+        rect.left = bx;
+        rect.right = (int)(bx + bw);
+        rect.bottom = (int)(by + bh);
+        path.addRect(rect, Path.Direction.CCW);
+
         path.close();
         canvas.drawPath(path, paint);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                float x = event.getX();
+                float y = event.getY();
+                if(rect.contains(x, y))
+                {
+                    Log.i("logs", "pressed");
+                   //pressed();
+                }
+                break;
+        }
+        return true;
+    }
+
+    private void pressed()
+    {
+
     }
 }
