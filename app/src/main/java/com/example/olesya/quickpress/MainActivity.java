@@ -16,16 +16,18 @@ import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity implements GameInterface{
     private static final int MIN_LEVEL = 1;
+    private static final int MIN_COMPLEXITY = 0;
     private Button settingsButton, startButton, recentButton;
     private Context context;
     private MyView myView;
-    private TextView timerTextView, bestResultTextView;
+    private TextView recentResultTextView, bestResultTextView;
     private long startTime = 0;
     private Handler timerHandler = new Handler();
-    private long bestResult = 0;
+    private long bestResult = 0, currentResult = 0;
     private boolean first = true, running = false;
-    private int pressedTime, pressedCount;
+    private int pressedTime, levelSettings, pressedCount;
     private SharedPreferences memory;
+    private  DAL dal;
 
     private Runnable timerRunnable = new Runnable() {
 
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             int milliseconds = (int)(millis - seconds*1000);
             seconds = seconds % 60;
 
-            timerTextView.setText(String.format("%d:%03d", seconds, milliseconds));
+            recentResultTextView.setText(String.format("%d:%03d", seconds, milliseconds));
             timerHandler.postDelayed(this, 100);
         }
 
@@ -51,11 +53,12 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         settingsButton = (Button)findViewById(R.id.settingsButton);
         startButton = (Button)findViewById(R.id.startButton);
         myView = (MyView)findViewById(R.id.myView);
-        timerTextView = (TextView) findViewById(R.id.recentResultTextView);
+        recentResultTextView = (TextView) findViewById(R.id.recentResultTextView);
         recentButton = (Button) findViewById(R.id.recentResultButton);
         bestResultTextView = (TextView)findViewById(R.id.bestResultTextView);
         memory = getSharedPreferences("setting", MODE_PRIVATE);
 
+        dal = new DAL(context);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
                     running = false;
                 }
                 else{
-                recentButton.setText(R.string.current_time);
+                recentButton.setText("Current time:");
                 startTime = System.currentTimeMillis();
                 timerHandler.postDelayed(timerRunnable, 0);
                 myView.invalidate();
@@ -84,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             }
         });
 
+
+        restoreResults();
 
     }
 
@@ -118,39 +123,59 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        int level = memory.getInt("level", MIN_LEVEL);
+        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
+        dal.saveTimes(level, complexity, currentResult, bestResult);
+    }
+
+    @Override
     public void pressed() {
-        if(running) {
-            pressedTime = memory.getInt("level", MIN_LEVEL);
-            pressedCount++;
-            if (pressedCount == pressedTime) {
-                timerHandler.removeCallbacks(timerRunnable);
-                setEnabled(true);
-                recentButton.setText(R.string.recentResult);
-                Toast.makeText(this, R.string.game_stopped, Toast.LENGTH_LONG).show();
-                long millis = System.currentTimeMillis() - startTime;
-                if (first || millis < bestResult) {
-                    bestResultTextView.setText(timerTextView.getText());
-                    bestResult = millis;
-                    first = false;
-                }
+        pressedTime = memory.getInt("level", MIN_LEVEL);
+        pressedCount++;
+        Toast.makeText(this,""+pressedCount+" out of "+pressedTime, Toast.LENGTH_SHORT).show();
 
-            } else
-                myView.invalidate();
+        if(pressedCount==pressedTime){
+        timerHandler.removeCallbacks(timerRunnable);
+        setEnabled(true);
+        recentButton.setText("Recent result");
+        Toast.makeText(this,"Stopped", Toast.LENGTH_LONG).show();
 
+            currentResult = System.currentTimeMillis() - startTime;
+        if(first || currentResult < bestResult)
+        {
+            bestResultTextView.setText(recentResultTextView.getText());
+            bestResult = currentResult;
+            first = false;
+        }
 
         }
-        Toast.makeText(this,R.string.pressToPlay, Toast.LENGTH_SHORT).show();
+        else
+            myView.invalidate();
+
+
+
     }
     private void setEnabled(boolean enabled){
+        pressedCount=0;
         settingsButton.setEnabled(enabled);
         recentButton.setEnabled(enabled);
         if(enabled){
-            pressedCount=0;
             startButton.setText(R.string.start);
             running = false;
         }
         else {
             startButton.setText(R.string.stop);
         }
+    }
+
+    private void restoreResults()
+    {
+        int level = memory.getInt("level", MIN_LEVEL);
+        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
+        bestResultTextView.setText("" + dal.getBestTime(level, complexity));
+        recentResultTextView.setText("" + dal.getRecentTime(level, complexity));
+
     }
     }

@@ -39,21 +39,37 @@ public class DAL {
     public long getBestTime(int level, int complexity)
     {
         db = dbHelper.getReadableDatabase();  //get db
-        Cursor cursor = db.rawQuery("SELECT "+ TimesContract.TimesContractEntry.BEST_RESULT + " FROM "+ TimesContract.TimesContractEntry.TABLE_NAME + "WHERE " +
-                TimesContract.TimesContractEntry.LEVEL + "=" + level + "AND" + TimesContract.TimesContractEntry.COMPLEXITY +
-                "=" + complexity, null);
+        Cursor cursor = db.rawQuery("SELECT "+ TimesContract.TimesContractEntry.BEST_RESULT + " FROM "+
+                TimesContract.TimesContractEntry.TABLE_NAME +
+                " WHERE " + TimesContract.TimesContractEntry.LEVEL + "=" + level + " AND " +
+                TimesContract.TimesContractEntry.COMPLEXITY + "=" + complexity, null);
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.BEST_RESULT);
-        return cursor.getLong(timeIndex);
+        if(timeIndex != -1) {
+            try {
+
+                return cursor.getLong(timeIndex);
+            }
+            catch (android.database.CursorIndexOutOfBoundsException e){
+            }
+        }
+
+    return 0;
     }
 
-    public long getRecentTime(int level, int complexity)
-    {
+    public long getRecentTime(int level, int complexity) {
         db = dbHelper.getReadableDatabase();  //get db
-        Cursor cursor = db.rawQuery("SELECT "+ TimesContract.TimesContractEntry.RECENT_RESULT + " FROM " +
-                TimesContract.TimesContractEntry.TABLE_NAME + "WHERE " +
-                TimesContract.TimesContractEntry.LEVEL + "=" + level + "AND" + TimesContract.TimesContractEntry.COMPLEXITY +
+        Cursor cursor = db.rawQuery("SELECT " + TimesContract.TimesContractEntry.RECENT_RESULT + " FROM " +
+                TimesContract.TimesContractEntry.TABLE_NAME + " WHERE " +
+                TimesContract.TimesContractEntry.LEVEL + "=" + level + " AND " + TimesContract.TimesContractEntry.COMPLEXITY +
                 "=" + complexity, null);
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.RECENT_RESULT);
-        return cursor.getLong(timeIndex);
+        if (timeIndex != -1) {
+            try {
+
+                return cursor.getLong(timeIndex);
+            } catch (android.database.CursorIndexOutOfBoundsException e) {
+            }
+        }
+        return 0;
     }
 }
