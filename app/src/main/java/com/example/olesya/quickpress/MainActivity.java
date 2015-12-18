@@ -2,6 +2,7 @@ package com.example.olesya.quickpress;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -18,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     MyView myView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         startButton = (Button)findViewById(R.id.startButton);
         context = this;
         myView = (MyView)findViewById(R.id.myView);
-       // myView = new MyView(this);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 myView.invalidate();
                 // /myView.postInvalidate();
                 //myView = new MyView(getApplicationContext());
-                Toast.makeText(context, "x=" + myView.x + " y=" + myView.y, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "x=" + myView.x + " y=" + myView.y, Toast.LENGTH_SHORT).show();
             }
         });
 

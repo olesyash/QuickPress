@@ -1,12 +1,14 @@
 package com.example.olesya.quickpress;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,18 +21,30 @@ public class SettingsActivity extends AppCompatActivity {
 
     TextView levelTextView, complexityTextView;
     Context context;
-
+    SharedPreferences memory;
+    SharedPreferences.Editor edit;
+    Button saveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        memory = getSharedPreferences("setting", MODE_PRIVATE);
+        edit = memory.edit();
         levelTextView = (TextView)findViewById(R.id.levelValueTextView);
         complexityTextView = (TextView)findViewById(R.id.complexityValueTextView);
-
+        saveButton = (Button)findViewById(R.id.saveButton);
+        levelTextView.setText(""+memory.getInt("level",1));
+        complexityTextView.setText(""+memory.getInt("complexity",0));
         context = this;
-
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edit.putInt("level", Integer.parseInt(levelTextView.getText().toString()));
+                edit.putInt("complexity", Integer.parseInt(complexityTextView.getText().toString()));
+                edit.apply();
+            }
+        });
 
         levelTextView.setOnClickListener(new View.OnClickListener() {
             @Override
