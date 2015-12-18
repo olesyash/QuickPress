@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     private Handler timerHandler = new Handler();
     private long bestResult = 0;
     private boolean first = true, running = false;
-    private int pressedTime, levelSettings, pressedCount;
+    private int pressedTime, pressedCount;
     private SharedPreferences memory;
 
     private Runnable timerRunnable = new Runnable() {
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
                     running = false;
                 }
                 else{
-                recentButton.setText("Current time:");
+                recentButton.setText(R.string.current_time);
                 startTime = System.currentTimeMillis();
                 timerHandler.postDelayed(timerRunnable, 0);
                 myView.invalidate();
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             if (pressedCount == pressedTime) {
                 timerHandler.removeCallbacks(timerRunnable);
                 setEnabled(true);
-                recentButton.setText("Recent result");
-                Toast.makeText(this, "Stopped", Toast.LENGTH_LONG).show();
+                recentButton.setText(R.string.recentResult);
+                Toast.makeText(this, R.string.game_stopped, Toast.LENGTH_LONG).show();
                 long millis = System.currentTimeMillis() - startTime;
                 if (first || millis < bestResult) {
                     bestResultTextView.setText(timerTextView.getText());
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
 
         }
-        Toast.makeText(this,"Press Start to Play", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,R.string.pressToPlay, Toast.LENGTH_SHORT).show();
     }
     private void setEnabled(boolean enabled){
         settingsButton.setEnabled(enabled);

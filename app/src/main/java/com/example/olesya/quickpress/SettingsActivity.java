@@ -38,9 +38,10 @@ public class SettingsActivity extends AppCompatActivity {
         levelTextView = (EditText)findViewById(R.id.levelValueTextView);
         complexityTextView = (EditText)findViewById(R.id.complexityValueTextView);
         saveButton = (Button)findViewById(R.id.saveButton);
-
-        levelTextView.setText("" + memory.getInt("level", MIN_LEVEL));
-        complexityTextView.setText(""+memory.getInt("complexity", MIN_COMPLEXITY));
+        String levelString = "" + memory.getInt("level", MIN_LEVEL);
+        levelTextView.setText(levelString);
+        String comlexityString = ""+memory.getInt("complexity", MIN_COMPLEXITY);
+        complexityTextView.setText(comlexityString);
         context = this;
 
         saveButton.setOnClickListener(new View.OnClickListener() {
