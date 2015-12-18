@@ -119,35 +119,33 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
     @Override
     public void pressed() {
-        pressedTime = memory.getInt("level", MIN_LEVEL);
-        pressedCount++;
-        Toast.makeText(this,""+pressedCount+" out of "+pressedTime, Toast.LENGTH_SHORT).show();
+        if(running) {
+            pressedTime = memory.getInt("level", MIN_LEVEL);
+            pressedCount++;
+            if (pressedCount == pressedTime) {
+                timerHandler.removeCallbacks(timerRunnable);
+                setEnabled(true);
+                recentButton.setText("Recent result");
+                Toast.makeText(this, "Stopped", Toast.LENGTH_LONG).show();
+                long millis = System.currentTimeMillis() - startTime;
+                if (first || millis < bestResult) {
+                    bestResultTextView.setText(timerTextView.getText());
+                    bestResult = millis;
+                    first = false;
+                }
 
-        if(pressedCount==pressedTime){
-        timerHandler.removeCallbacks(timerRunnable);
-        setEnabled(true);
-        recentButton.setText("Recent result");
-        Toast.makeText(this,"Stopped", Toast.LENGTH_LONG).show();
-        long millis = System.currentTimeMillis() - startTime;
-        if(first || millis < bestResult)
-        {
-            bestResultTextView.setText(timerTextView.getText());
-            bestResult = millis;
-            first = false;
+            } else
+                myView.invalidate();
+
+
         }
-
-        }
-        else
-            myView.invalidate();
-
-
-
+        Toast.makeText(this,"Press Start to Play", Toast.LENGTH_SHORT).show();
     }
     private void setEnabled(boolean enabled){
-        pressedCount=0;
         settingsButton.setEnabled(enabled);
         recentButton.setEnabled(enabled);
         if(enabled){
+            pressedCount=0;
             startButton.setText(R.string.start);
             running = false;
         }
