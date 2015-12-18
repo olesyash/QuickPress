@@ -2,6 +2,7 @@ package com.example.olesya.quickpress;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.os.Handler;
 
 
 public class MainActivity extends AppCompatActivity implements GameInterface{
+    private static final int MIN_LEVEL = 1;
     private Button settingsButton, startButton, recentButton;
     private Context context;
     private MyView myView;
@@ -21,11 +23,15 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     private long startTime = 0;
     private Handler timerHandler = new Handler();
     private long bestResult = 0;
-    private boolean first = true;
+    private boolean first = true, running = false;
+    private int pressedTime, levelSettings, pressedCount;
+    private SharedPreferences memory;
+
     private Runnable timerRunnable = new Runnable() {
 
         @Override
         public void run() {
+            setEnabled(false);
             long millis = System.currentTimeMillis() - startTime;
             int seconds = (int) (millis / 1000);
             int milliseconds = (int)(millis - seconds*1000);
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             timerTextView.setText(String.format("%d:%03d", seconds, milliseconds));
             timerHandler.postDelayed(this, 100);
         }
+
     };
 
     @Override
@@ -47,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         timerTextView = (TextView) findViewById(R.id.recentResultTextView);
         recentButton = (Button) findViewById(R.id.recentResultButton);
         bestResultTextView = (TextView)findViewById(R.id.bestResultTextView);
+        memory = getSharedPreferences("setting", MODE_PRIVATE);
 
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -60,10 +68,19 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(running){
+                    recentButton.setText(R.string.recentResultButtonText);
+                    setEnabled(true);
+                    timerHandler.removeCallbacks(timerRunnable);
+                    running = false;
+                }
+                else{
                 recentButton.setText("Current time:");
                 startTime = System.currentTimeMillis();
                 timerHandler.postDelayed(timerRunnable, 0);
                 myView.invalidate();
+                    running= true;
+                }
             }
         });
 
@@ -102,7 +119,13 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
     @Override
     public void pressed() {
+        pressedTime = memory.getInt("level", MIN_LEVEL);
+        pressedCount++;
+        Toast.makeText(this,""+pressedCount+" out of "+pressedTime, Toast.LENGTH_SHORT).show();
+
+        if(pressedCount==pressedTime){
         timerHandler.removeCallbacks(timerRunnable);
+        setEnabled(true);
         recentButton.setText("Recent result");
         Toast.makeText(this,"Stopped", Toast.LENGTH_LONG).show();
         long millis = System.currentTimeMillis() - startTime;
@@ -112,6 +135,24 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             bestResult = millis;
             first = false;
         }
-    }
 
-}
+        }
+        else
+            myView.invalidate();
+
+
+
+    }
+    private void setEnabled(boolean enabled){
+        pressedCount=0;
+        settingsButton.setEnabled(enabled);
+        recentButton.setEnabled(enabled);
+        if(enabled){
+            startButton.setText(R.string.start);
+            running = false;
+        }
+        else {
+            startButton.setText(R.string.stop);
+        }
+    }
+    }

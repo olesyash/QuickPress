@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">QuickPress</string>
-
+    <string name="stop">Stop</string>
+    <string name="start">Start</string>
     <string name="action_settings">Settings</string>
     <string name="bestResultButtonText">Best Result:</string>
     <string name="recentResultButtonText">Recent Result:</string>
