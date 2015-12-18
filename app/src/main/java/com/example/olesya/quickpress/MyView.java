@@ -24,6 +24,7 @@ public class MyView extends View {
     private int height, width, top, right, bx, by;
     private Paint paint;
     private Path path;
+    private final static int POWER = 2;
     private final static float RADIUS = 50;
     private final static float bw = 120, bh = 80;
     private float[] x;
@@ -65,12 +66,28 @@ public class MyView extends View {
     }
     private void getRandomCircle(int i){
         rand = new Random();
-        do  {
-            x[i] = rand.nextInt((int) (width - RADIUS));
-            y[i] = rand.nextInt((int) (height - RADIUS));
-       }    while (x[i] < RADIUS || y[i] < RADIUS);
+        do {
+                x[i] = rand.nextInt((int) (width - RADIUS));
+                y[i] = rand.nextInt((int) (height - RADIUS));
+            } while (intersect(i)||(x[i]<RADIUS||y[i]<RADIUS));
     }
 
+    private boolean intersect(int i){
+        double a, b, c, d, r1, r2;
+        r2 = Math.pow(RADIUS+bh , POWER);
+        c = Math.pow((rect.left+bw/2)-x[i], POWER);
+        d = Math.pow((rect.top+bh/2)-y[i], POWER);
+        if((c+d)<=r2)
+            return true;
+        r1 = Math.pow(2*RADIUS, POWER);
+        for(int j= i-1;j>=0;j--){
+            a = Math.pow(x[j]-x[i],POWER);
+            b = Math.pow(y[j]-y[i], POWER);
+            if((a+b)<=r1)
+                return true;
+        }
+        return false;
+    }
     private void getRandomButton()
     {
         rand = new Random();
@@ -97,18 +114,18 @@ public class MyView extends View {
         x = new float[complexity+1];
         y = new float[complexity+1];
         path.reset();
+        getRandomButton();
+        rect.top = by;
+        rect.left = bx;
+        rect.right = (int)(bx + bw);
+        rect.bottom = (int)(by + bh);
         for(int i = 0; i < complexity; i++) {
             getRandomCircle(i);
 
             path.addCircle(x[i], y[i], RADIUS, Path.Direction.CCW);
         }
 
-        getRandomButton();
 
-        rect.top = by;
-        rect.left = bx;
-        rect.right = (int)(bx + bw);
-        rect.bottom = (int)(by + bh);
         path.addRect(rect, Path.Direction.CCW);
 
         path.close();
