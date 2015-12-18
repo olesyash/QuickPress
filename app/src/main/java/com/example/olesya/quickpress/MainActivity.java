@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             bestResult = millis;
             first = false;
         }
-
-
     }
+
 }
