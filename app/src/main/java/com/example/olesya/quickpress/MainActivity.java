@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         bestResultTextView = (TextView)findViewById(R.id.bestResultTextView);
         memory = getSharedPreferences("setting", MODE_PRIVATE);
 
-        dal = new DAL(context);
+     //   dal = new DAL(context);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         });
 
 
-        restoreResults();
+      //  restoreResults();
 
     }
 
@@ -122,13 +122,14 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         myView.invalidate();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        int level = memory.getInt("level", MIN_LEVEL);
-        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
-        dal.saveTimes(level, complexity, currentResult, bestResult);
-    }
+
+//    @Override
+//    protected void onDestroy(){
+//        super.onDestroy();
+//        int level = memory.getInt("level", MIN_LEVEL);
+//        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
+//        dal.saveTimes(level, complexity, currentResult, bestResult);
+//    }
 
     @Override
     public void pressed() {
@@ -170,12 +171,12 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         }
     }
 
-    private void restoreResults()
-    {
-        int level = memory.getInt("level", MIN_LEVEL);
-        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
-        bestResultTextView.setText("" + dal.getBestTime(level, complexity));
-        recentResultTextView.setText("" + dal.getRecentTime(level, complexity));
-
-    }
+//    private void restoreResults()
+//    {
+//        int level = memory.getInt("level", MIN_LEVEL);
+//        int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
+//        bestResultTextView.setText("" + dal.getBestTime(level, complexity));
+//        recentResultTextView.setText("" + dal.getRecentTime(level, complexity));
+//
+//    }
     }
