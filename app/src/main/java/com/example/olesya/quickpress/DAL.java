@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * Created by olesya on 18-Dec-15.
@@ -26,8 +27,22 @@ public class DAL {
         values.put(TimesContract.TimesContractEntry.COMPLEXITY, complexity);
         values.put(TimesContract.TimesContractEntry.BEST_RESULT, best);
         values.put(TimesContract.TimesContractEntry.RECENT_RESULT, recent);
-        db.insert(TimesContract.TimesContractEntry.TABLE_NAME, null, values);
-        db.close();
+
+        long res = getRecentTime(level, complexity);
+        Log.e("in saveTimes", "res is " + res);
+        if(res == -1)
+        {
+            db.insert(TimesContract.TimesContractEntry.TABLE_NAME, null, values);
+            db.close();
+            Log.e("new", "Inserted new");
+        }
+        else
+        {
+            db.update(TimesContract.TimesContractEntry.TABLE_NAME, values, null, null);
+            db.close();
+            Log.e("update", "updating the existing one");
+        }
+
 
     }
     public Cursor getCursor()
@@ -44,16 +59,16 @@ public class DAL {
                 " WHERE " + TimesContract.TimesContractEntry.LEVEL + "=" + level + " AND " +
                 TimesContract.TimesContractEntry.COMPLEXITY + "=" + complexity, null);
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.BEST_RESULT);
-        if(timeIndex != -1) {
+        cursor.moveToNext();
             try {
 
-                return cursor.getLong(timeIndex);
+                long br = cursor.getInt(timeIndex);
+                cursor.close();
+                return br;
             }
             catch (android.database.CursorIndexOutOfBoundsException e){
+                return -1;
             }
-        }
-
-    return 0;
     }
 
     public long getRecentTime(int level, int complexity) {
@@ -63,13 +78,11 @@ public class DAL {
                 TimesContract.TimesContractEntry.LEVEL + "=" + level + " AND " + TimesContract.TimesContractEntry.COMPLEXITY +
                 "=" + complexity, null);
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.RECENT_RESULT);
-        if (timeIndex != -1) {
+        cursor.moveToNext();
             try {
-
-                return cursor.getLong(timeIndex);
+                return cursor.getInt(timeIndex);
             } catch (android.database.CursorIndexOutOfBoundsException e) {
+                return -1;
             }
-        }
-        return 0;
     }
 }

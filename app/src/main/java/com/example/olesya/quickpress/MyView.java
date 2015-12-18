@@ -35,6 +35,7 @@ public class MyView extends View {
     private GameInterface gi;
     private SharedPreferences memory;
     private SharedPreferences.Editor edit;
+    protected boolean bttn_pressed = false;
     int level, complexity;
     public MyView(Context context) {
         super(context);
@@ -119,14 +120,16 @@ public class MyView extends View {
         rect.left = bx;
         rect.right = (int)(bx + bw);
         rect.bottom = (int)(by + bh);
-        for(int i = 0; i < complexity; i++) {
-            getRandomCircle(i);
 
-            path.addCircle(x[i], y[i], RADIUS, Path.Direction.CCW);
+        if(bttn_pressed) {
+            for (int i = 0; i < complexity; i++) {
+                getRandomCircle(i);
+
+                path.addCircle(x[i], y[i], RADIUS, Path.Direction.CCW);
+            }
+
+            path.addRect(rect, Path.Direction.CCW);
         }
-
-
-        path.addRect(rect, Path.Direction.CCW);
 
         path.close();
         canvas.drawPath(path, paint);
