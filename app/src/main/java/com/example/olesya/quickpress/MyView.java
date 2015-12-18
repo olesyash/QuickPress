@@ -20,7 +20,7 @@ import java.util.Random;
 /**
  * Created by itamar on 12-Dec-15.
  */
-public class MyView extends View{
+public class MyView extends View {
     private int height, width, top, right, bx, by;
     private Paint paint;
     private Path path;
@@ -31,7 +31,7 @@ public class MyView extends View{
     private RectF rect;
     private Random rand;
     private Context context;
-
+    private GameInterface gi;
     private SharedPreferences memory;
     private SharedPreferences.Editor edit;
     int level, complexity;
@@ -53,13 +53,14 @@ public class MyView extends View{
 
     private void init(AttributeSet attrs, int defStyle, Context context)
     {
+
         memory = context.getSharedPreferences("setting", context.MODE_PRIVATE);
         rect = new RectF();
         paint = new Paint();
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);
         path = new Path();
-        context = getContext();
+        gi = (GameInterface)context;
 
     }
     private void getRandomCircle(int i){
@@ -125,15 +126,11 @@ public class MyView extends View{
                 if(rect.contains(x, y))
                 {
                     Log.i("logs", "pressed");
-                   //pressed();
+                   gi.pressed();
                 }
                 break;
         }
         return true;
     }
 
-    private void pressed()
-    {
-
-    }
 }

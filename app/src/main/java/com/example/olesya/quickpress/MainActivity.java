@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GameInterface{
     Button settingsButton, startButton;
     Context context;
     MyView myView;
@@ -79,5 +79,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         myView.invalidate();
+    }
+
+    @Override
+    public void pressed() {
+        Toast.makeText(this,"Pressed", Toast.LENGTH_LONG).show();
     }
 }
