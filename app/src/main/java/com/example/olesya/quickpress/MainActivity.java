@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             }
         });
 
-
         restoreResults();
 
     }
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(context, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
             return true;
         }
 
@@ -115,9 +114,10 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        myView.invalidate();
+    protected void onRestart() {
+        super.onRestart();
+        restoreResults();
+
     }
 
 
@@ -178,11 +178,13 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         currentResult = dal.getRecentTime(level, complexity);
         if(bestResult == DB_ERROR || currentResult == DB_ERROR) {
             first = true;
+            bestResult = 0;
+            currentResult = 0;
         }
-        else {
+
             bestResultTextView.setText(formatStringTime(bestResult));
             recentResultTextView.setText(formatStringTime(currentResult));
-        }
+
     }
 
     private String formatStringTime(long millis)

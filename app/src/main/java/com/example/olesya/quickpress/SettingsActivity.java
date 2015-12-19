@@ -101,4 +101,6 @@ public class SettingsActivity extends AppCompatActivity {
         Toast.makeText(context, "Settings saved", Toast.LENGTH_SHORT).show();
         edit.apply();
     }
+
+
 }
