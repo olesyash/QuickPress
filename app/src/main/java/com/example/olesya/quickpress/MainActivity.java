@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         pressedTime = memory.getInt("level", MIN_LEVEL);
         pressedCount++;
 
-        if(pressedCount==pressedTime)
+        if(pressedCount == pressedTime)
         {
         timerHandler.removeCallbacks(timerRunnable);
             currentResult = System.currentTimeMillis() - startTime;
@@ -150,10 +150,16 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
             recentButton.setText("Recent result");
             setEnabled(true);
 
+            int level = memory.getInt("level", MIN_LEVEL);
+            int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
+            dal.saveTimes(level, complexity, currentResult, bestResult);
+            bestResult = dal.getBestTime(level, complexity);
+            currentResult = dal.getRecentTime(level, complexity);
+            Log.e("DB debug", "bestResult after saving" + bestResult);
+            Log.e("DB debug", "currentResult after saving" + currentResult);
         }
         else
             myView.invalidate();
-
 
 
     }
@@ -176,14 +182,18 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         int complexity = memory.getInt("complexity", MIN_COMPLEXITY);
         bestResult = dal.getBestTime(level, complexity);
         currentResult = dal.getRecentTime(level, complexity);
+        Log.e("DB debug", "bestResult" + bestResult);
+        Log.e("DB debug", "currentResult" + currentResult);
         if(bestResult == DB_ERROR || currentResult == DB_ERROR) {
             first = true;
+            Log.e("DB debug", "first" + first);
             bestResult = 0;
             currentResult = 0;
         }
 
             bestResultTextView.setText(formatStringTime(bestResult));
             recentResultTextView.setText(formatStringTime(currentResult));
+
 
     }
 

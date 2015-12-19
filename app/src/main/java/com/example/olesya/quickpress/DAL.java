@@ -29,18 +29,20 @@ public class DAL {
         values.put(TimesContract.TimesContractEntry.RECENT_RESULT, recent);
 
         long res = getRecentTime(level, complexity);
-        Log.e("in saveTimes", "res is " + res);
+        Log.e("DB debug", "recent time is " + res);
         if(res == -1)
         {
             db.insert(TimesContract.TimesContractEntry.TABLE_NAME, null, values);
             db.close();
-            Log.e("new", "Inserted new");
+            Log.e("DB debug", "Inserted new");
         }
         else
         {
-            db.update(TimesContract.TimesContractEntry.TABLE_NAME, values, null, null);
+            String whereClause = TimesContract.TimesContractEntry.LEVEL + " = " + level + " AND " +
+                    TimesContract.TimesContractEntry.COMPLEXITY + "=" + complexity;
+            db.update(TimesContract.TimesContractEntry.TABLE_NAME, values, whereClause, null);
             db.close();
-            Log.e("update", "updating the existing one");
+            Log.e("DB debug", "updating the existing one");
         }
 
 
@@ -61,12 +63,12 @@ public class DAL {
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.BEST_RESULT);
         cursor.moveToNext();
             try {
-
                 long br = cursor.getInt(timeIndex);
                 cursor.close();
                 return br;
             }
             catch (android.database.CursorIndexOutOfBoundsException e){
+                cursor.close();
                 return -1;
             }
     }
@@ -80,9 +82,13 @@ public class DAL {
         int timeIndex = cursor.getColumnIndex(TimesContract.TimesContractEntry.RECENT_RESULT);
         cursor.moveToNext();
             try {
-                return cursor.getInt(timeIndex);
+                long res = cursor.getInt(timeIndex);
+                cursor.close();
+                return res;
             } catch (android.database.CursorIndexOutOfBoundsException e) {
+                cursor.close();
                 return -1;
             }
+
     }
 }
