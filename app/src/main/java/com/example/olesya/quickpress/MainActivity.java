@@ -5,101 +5,67 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.os.Handler;
 
 
 public class MainActivity extends AppCompatActivity implements GameInterface{
-    private static final int MIN_LEVEL = 1;
-    private static final int MIN_COMPLEXITY = 0;
+    //Define constants
+    private static final int MIN_LEVEL = 1, MIN_COMPLEXITY = 0;
+    private static final int DELAY = 100 ;
     private static final int DB_ERROR = -1, INIT_TIME = 0;
+    //Buttons
     private Button settingsButton, startButton, recentButton, bestButton;
+    //Text Views
+    private TextView recentResultTextView, bestResultTextView;
+    //Define variables
     private Context context;
     private MyView myView;
-    private TextView recentResultTextView, bestResultTextView;
     private long startTime = 0;
     private Handler timerHandler = new Handler();
     private long bestResult = 0, currentResult = 0;
     private boolean first, running = false;
-    private int pressedTime, pressedCount;
+    private int requiredNumOfClicks, pressedCount;
     private SharedPreferences memory;
-    private  DAL dal;
+    private DAL dal;
     private int level,complexity;
-    private Runnable timerRunnable = new Runnable() {
 
+    //Define thread for the timer. Will sleep for DELAY time = 100ms
+    private Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
-            setEnabled(false);
-            timerHandler.postDelayed(this, 100);
-            long millis = (long)(System.currentTimeMillis() - startTime);
-            recentResultTextView.setText(formatStringTime(millis));
+            setEnabled(false); //Disable buttons
+            timerHandler.postDelayed(this, DELAY); // go to sleep
+            long millis = (long)(System.currentTimeMillis() - startTime); //Calculate the time that passed
+            recentResultTextView.setText(formatStringTime(millis)); //Use Internal function to show time
         }
-
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        //Initialize variables
         context = this;
-        settingsButton = (Button)findViewById(R.id.settingsButton);
-        startButton = (Button)findViewById(R.id.startButton);
-        myView = (MyView)findViewById(R.id.myView);
-        recentResultTextView = (TextView) findViewById(R.id.recentResultTextView);
-        recentButton = (Button) findViewById(R.id.recentResultButton);
-        bestResultTextView = (TextView)findViewById(R.id.bestResultTextView);
         memory = getSharedPreferences("setting", MODE_PRIVATE);
-        bestButton = (Button)findViewById(R.id.bestResultButton);
-        getLevelAndComlexity();
-        dal = new DAL(context);
-
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (running) {
-                    recentButton.setText(R.string.recentResultButtonText);
-                    setEnabled(true);
-                } else {
-                    myView.bttn_pressed = true;
-                    recentButton.setText(R.string.current_time);
-                    startTime = System.currentTimeMillis();
-                    timerHandler.postDelayed(timerRunnable, INIT_TIME);
-                    myView.invalidate();
-                    running = true;
-                }
-            }
-        });
-        bestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                first = true;
-                bestResultTextView.setText(formatStringTime(INIT_TIME));
-                getLevelAndComlexity();
-                dal.saveTimes(level, complexity, currentResult, DB_ERROR);
-            }
-        });
-
-        restoreResults();
+        dal = new DAL(context); //Create dal object to use DB
+        initViews(); //Initialize Views
+        getLevelAndComplexity(); //Get level and complexity from shared memory
+        voidAddListeners(); //Use private function to set Listeners to Buttons
+        restoreResults(); //Read saved results from DB
 
     }
-    private void getLevelAndComlexity(){
+    //Function used to get level and complexity from shared memory
+    private void getLevelAndComplexity(){
         level = memory.getInt("level", MIN_LEVEL);
         complexity = memory.getInt("complexity", MIN_COMPLEXITY);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -116,27 +82,20 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(context, SettingsActivity.class);
+            Intent intent = new Intent(context, SettingsActivity.class); //Goto settings Activity
             startActivityForResult(intent, 1);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        myView.bttn_pressed = false;
+        myView.invalidate();
         restoreResults();
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        restoreResults();
-
-    }
-
 
     @Override
     protected void onPause(){
@@ -146,75 +105,68 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
     @Override
     public void pressed() {
+        //if running = true - the game started
         if(running){
-
-            pressedTime = memory.getInt("level", MIN_LEVEL);
+            requiredNumOfClicks = memory.getInt("level", MIN_LEVEL);
             pressedCount++;
 
-            if(pressedCount == pressedTime)
+            //Check if number of clicks is the required number
+            if(pressedCount == requiredNumOfClicks)
             {
-                timerHandler.removeCallbacks(timerRunnable);
-                currentResult = System.currentTimeMillis() - startTime;
+                timerHandler.removeCallbacks(timerRunnable); //Stop the timer
+                currentResult = System.currentTimeMillis() - startTime; //Calculate the time that passed
 
                 recentResultTextView.setText(formatStringTime(currentResult));
-                if( first|| (currentResult < bestResult))
+                if( first|| (currentResult < bestResult)) //Update best result if got better result
                 {
                     bestResult = currentResult;
-
                     bestResultTextView.setText(formatStringTime(bestResult));
                     first = false;
                 }
-
-                getLevelAndComlexity();
-                dal.saveTimes(level, complexity, currentResult, bestResult);
-                recentButton.setText(R.string.recentResultButtonText);
-                setEnabled(true);
-                bestResult = dal.getBestTime(level, complexity);
-                currentResult = dal.getRecentTime(level, complexity);
-                Log.e("DB debug", "bestResult after saving" + bestResult);
-                Log.e("DB debug", "currentResult after saving" + currentResult);
+                getLevelAndComplexity();
+                dal.saveTimes(level, complexity, currentResult, bestResult); //Save in DB the results
+                recentButton.setText(R.string.recentResultButtonText); //Change the button string
+                setEnabled(true); //Enable buttons
             }
-            else {
-                myView.invalidate();
-            }
+            else { //Still playing
+                myView.invalidate(); //Generate new places for square and circles
         }
-
-
+        }
     }
+
+    //Functions to enable or disable buttons and update their string depending on game state
     private void setEnabled(boolean enabled){
         settingsButton.setEnabled(enabled);
         bestButton.setEnabled(enabled);
-        if(enabled){
-            pressedCount = 0;
+        if(enabled){  //  Game state = hold - waiting for user to start playing
+            pressedCount = 0; //Reset clicks counter
             startButton.setText(R.string.start);
             timerHandler.removeCallbacks(timerRunnable);
             running = false;
         }
-        else {
+        else { // Games state = playing
             startButton.setText(R.string.stop);
         }
     }
 
+    //Function to restore results from DB and show them
     private void restoreResults()
     {
-        getLevelAndComlexity();
+        getLevelAndComplexity();
         bestResult = dal.getBestTime(level, complexity);
         currentResult = dal.getRecentTime(level, complexity);
-        Log.e("DB debug", "bestResult" + bestResult);
-        Log.e("DB debug", "currentResult" + currentResult);
-        if(bestResult == DB_ERROR || currentResult == DB_ERROR) {
-            first = true;
-            Log.e("DB debug", "first" + first);
+
+        if(bestResult == DB_ERROR || currentResult == DB_ERROR) { //One of the lines missing in DB
+            first = true; //Flag that shows us it's the first time for current game (level+complexity)
             bestResult = 0;
             currentResult = 0;
         }
-
+        //Update text views to show the results
             bestResultTextView.setText(formatStringTime(bestResult));
             recentResultTextView.setText(formatStringTime(currentResult));
-
-
     }
 
+    //Function to format time to string in following format: ss:xxx xxx = ms
     private String formatStringTime(long millis)
     {
         int seconds = (int) (millis / 1000);
@@ -222,4 +174,60 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         seconds = seconds % 60;
         return String.format("%d:%03d", seconds, milliseconds);
     }
+
+    //Function to initialize views
+    private void initViews()
+    {
+        settingsButton = (Button)findViewById(R.id.settingsButton);
+        startButton = (Button)findViewById(R.id.startButton);
+        myView = (MyView)findViewById(R.id.myView);
+        recentResultTextView = (TextView) findViewById(R.id.recentResultTextView);
+        recentButton = (Button) findViewById(R.id.recentResultButton);
+        bestResultTextView = (TextView)findViewById(R.id.bestResultTextView);
+        bestButton = (Button)findViewById(R.id.bestResultButton);
     }
+
+    //Functions to add Listeners to Buttons
+    private void voidAddListeners()
+    {
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //If settings button pressed - > goto settings Activity
+                Intent intent = new Intent(context, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //If start button pressed check status
+                if (running) { //if status = playing and start pressed, stop the game
+                    recentButton.setText(R.string.recentResultButtonText); //Update string Button to "Recent Result"
+                    setEnabled(true); //Enable buttons
+                } else { //if status = hold -> start game
+                    myView.bttn_pressed = true;
+                    recentButton.setText(R.string.current_time); //Update string Button to "Current Result"
+                    startTime = System.currentTimeMillis(); //Save start time to calculate running time later
+                    timerHandler.postDelayed(timerRunnable, INIT_TIME); // Start timer
+                    myView.invalidate(); //Refresh the game canvas
+                    running = true;
+                }
+            }
+        });
+        
+        bestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //If Best Time button pressed, reset the best time
+                first = true;
+                bestResultTextView.setText(formatStringTime(INIT_TIME)); //Set to zero
+                //Update in DB the suitable line to Best Time = 0
+                getLevelAndComplexity();
+                dal.saveTimes(level, complexity, currentResult, DB_ERROR);
+            }
+        });
+    }
+}
+

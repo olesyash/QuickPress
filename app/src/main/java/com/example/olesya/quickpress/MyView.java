@@ -6,40 +6,38 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-
 import java.util.Random;
 
 /**
  * Created by itamar on 12-Dec-15.
  */
 public class MyView extends View {
-    private int height, width, top, right, bx, by;
-    private Paint paint;
-    private Path path;
+    //Define constants
     private final static int POWER = 2;
     private final static float RADIUS = 50;
     private final static float bw = 120, bh = 80;
+
+    //Define variables
+    private int height, width, bx, by;
+    private Paint paint;
+    private Path path;
     private float[] x;
     private float[] y;
     private RectF rect;
     private Random rand;
-    private Context context;
     private GameInterface gi;
     private SharedPreferences memory;
-    private SharedPreferences.Editor edit;
     protected boolean bttn_pressed = false;
     int level, complexity;
+
+    //Constructors
     public MyView(Context context) {
         super(context);
-//        edit = memory.edit();
         init(null, 0,context);
     }
 
@@ -53,9 +51,9 @@ public class MyView extends View {
         init(attrs, defStyle,context);
     }
 
+    //Initialization function
     private void init(AttributeSet attrs, int defStyle, Context context)
     {
-
         memory = context.getSharedPreferences("setting", context.MODE_PRIVATE);
         rect = new RectF();
         paint = new Paint();
@@ -65,14 +63,17 @@ public class MyView extends View {
         gi = (GameInterface)context;
 
     }
+
+    //Function to regenerate new random place for circles without collisions
     private void getRandomCircle(int i){
         rand = new Random();
         do {
                 x[i] = rand.nextInt((int) (width - RADIUS));
                 y[i] = rand.nextInt((int) (height - RADIUS));
-            } while (intersect(i)||(x[i]<RADIUS||y[i]<RADIUS));
+            } while (intersect(i)||(x[i]<RADIUS||y[i]<RADIUS)); // Generate new place if the new circle intersect with all others
     }
 
+    //The function check if the sent circle intersect with all other circles. return true if intersects with one of them
     private boolean intersect(int i){
         double a, b, c, d, r1, r2;
         r2 = Math.pow(RADIUS+bh , POWER);
@@ -89,6 +90,8 @@ public class MyView extends View {
         }
         return false;
     }
+
+    //Function generates new random place for the red rectangle
     private void getRandomButton()
     {
         rand = new Random();
@@ -96,45 +99,49 @@ public class MyView extends View {
         by = rand.nextInt((int)(height - bh));
     }
 
+    //Function to treat size changing
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        right = getPaddingRight();
-        top = getPaddingTop();
         width = w - (getPaddingLeft() + getPaddingRight());
         height = h - (getPaddingTop() + getPaddingBottom());
 
     }
 
+    //Function to draw the screen
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        level = memory.getInt("level",1);
-        complexity = memory.getInt("complexity",0);
 
-        x = new float[complexity+1];
-        y = new float[complexity+1];
         path.reset();
-        getRandomButton();
-        rect.top = by;
-        rect.left = bx;
-        rect.right = (int)(bx + bw);
-        rect.bottom = (int)(by + bh);
+        if(bttn_pressed) { //if start button pressed - the game started - draw
 
-        if(bttn_pressed) {
+            //Get level and complexity
+            level = memory.getInt("level",1);
+            complexity = memory.getInt("complexity",0);
+            //Create arrays in complexity size
+            x = new float[complexity+1];
+            y = new float[complexity+1];
+
+            getRandomButton();
+            //Draw rectangle
+            rect.top = by;
+            rect.left = bx;
+            rect.right = (int)(bx + bw);
+            rect.bottom = (int)(by + bh);
+            path.addRect(rect, Path.Direction.CCW);
+
+            //Draw circles
             for (int i = 0; i < complexity; i++) {
                 getRandomCircle(i);
-
                 path.addCircle(x[i], y[i], RADIUS, Path.Direction.CCW);
             }
-
-            path.addRect(rect, Path.Direction.CCW);
+            path.close();
         }
-
-        path.close();
         canvas.drawPath(path, paint);
     }
 
+    //Function treats touch event
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -143,14 +150,12 @@ public class MyView extends View {
             case MotionEvent.ACTION_DOWN:
                 float x = event.getX();
                 float y = event.getY();
-                if(rect.contains(x, y))
+                if(rect.contains(x, y)) //Check if the rectangle was pressed
                 {
-                    Log.i("logs", "pressed");
-                   gi.pressed();
+                   gi.pressed(); //Notify Main Activity that he was pressed
                 }
                 break;
         }
         return true;
     }
-
 }

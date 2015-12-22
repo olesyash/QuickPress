@@ -76,12 +76,24 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Function to save settings in shared preferences
     private void saveData()
     {
         int level, complexity;
         edit = memory.edit();
-        level = Integer.parseInt(levelTextView.getText().toString());
-        complexity = Integer.parseInt(complexityTextView.getText().toString());
+        String l, c;
+
+        //Get settings from user
+        l = levelTextView.getText().toString();
+        c = complexityTextView.getText().toString();
+        if(l.isEmpty())
+            l = "" + MIN_LEVEL;
+        if(c.isEmpty())
+            c= "" + MIN_COMPLEXITY;
+        level = Integer.parseInt(l);
+        complexity = Integer.parseInt(c);
+
+        //Values validation
         if(level < MIN_LEVEL || level > MAX_LEVEL) {
             Toast.makeText(context, "Level has to be between " + MIN_LEVEL + " to " + MAX_LEVEL, Toast.LENGTH_SHORT).show();
             levelTextView.setText("" + memory.getInt("level", MIN_LEVEL));
@@ -101,6 +113,4 @@ public class SettingsActivity extends AppCompatActivity {
         Toast.makeText(context, "Settings saved", Toast.LENGTH_SHORT).show();
         edit.apply();
     }
-
-
 }

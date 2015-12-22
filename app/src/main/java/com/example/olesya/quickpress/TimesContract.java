@@ -5,6 +5,8 @@ import android.provider.BaseColumns;
 /**
  * Created by olesya on 18-Dec-15.
  */
+
+//Class defines table columns names
 public class TimesContract {
     public TimesContract(){}
     public static abstract class TimesContractEntry implements BaseColumns {

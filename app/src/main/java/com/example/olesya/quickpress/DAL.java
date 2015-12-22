@@ -9,8 +9,10 @@ import android.util.Log;
 /**
  * Created by olesya on 18-Dec-15.
  */
-public class DAL {
 
+//This class is for DB treatment
+public class DAL {
+    //Define variables
     private DBHelper dbHelper;
     private SQLiteDatabase db;
 
@@ -18,25 +20,28 @@ public class DAL {
         dbHelper = new DBHelper(context);
     }
 
+    //Function to save Best Result and Current Result to DB in suitable line for complexity and level
     public void saveTimes(int level, int complexity, long recent, long best)
     {
         db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+        //Add all values to dictionary
         values.put(TimesContract.TimesContractEntry.LEVEL, level);
         values.put(TimesContract.TimesContractEntry.COMPLEXITY, complexity);
         values.put(TimesContract.TimesContractEntry.BEST_RESULT, best);
         values.put(TimesContract.TimesContractEntry.RECENT_RESULT, recent);
 
+        //Try to get line from DB
         long res = getRecentTime(level, complexity);
-        Log.e("DB debug", "recent time is " + res);
+        //If no such line in DB, add it
         if(res == -1)
         {
             db.insert(TimesContract.TimesContractEntry.TABLE_NAME, null, values);
             db.close();
             Log.e("DB debug", "Inserted new");
         }
-        else
+        else //If the ine exists, update it
         {
             String whereClause = TimesContract.TimesContractEntry.LEVEL + " = " + level + " AND " +
                     TimesContract.TimesContractEntry.COMPLEXITY + "=" + complexity;
@@ -44,15 +49,16 @@ public class DAL {
             db.close();
             Log.e("DB debug", "updating the existing one");
         }
-
-
     }
+
+    //Function return Cursor of the DB
     public Cursor getCursor()
     {
         db = dbHelper.getReadableDatabase();  //get db
         return db.rawQuery("SELECT * FROM " + TimesContract.TimesContractEntry.TABLE_NAME, null); //get data
     }
 
+    //Get Best Time from DB
     public long getBestTime(int level, int complexity)
     {
         db = dbHelper.getReadableDatabase();  //get db
@@ -73,6 +79,7 @@ public class DAL {
             }
     }
 
+    //Get Resent Time from DB
     public long getRecentTime(int level, int complexity) {
         db = dbHelper.getReadableDatabase();  //get db
         Cursor cursor = db.rawQuery("SELECT " + TimesContract.TimesContractEntry.RECENT_RESULT + " FROM " +
@@ -89,6 +96,8 @@ public class DAL {
                 cursor.close();
                 return -1;
             }
-
     }
+
+
 }
+
