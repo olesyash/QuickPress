@@ -51,13 +51,6 @@ public class DAL {
         }
     }
 
-    //Function return Cursor of the DB
-    public Cursor getCursor()
-    {
-        db = dbHelper.getReadableDatabase();  //get db
-        return db.rawQuery("SELECT * FROM " + TimesContract.TimesContractEntry.TABLE_NAME, null); //get data
-    }
-
     //Get Best Time from DB
     public long getBestTime(int level, int complexity)
     {
@@ -97,7 +90,5 @@ public class DAL {
                 return -1;
             }
     }
-
-
 }
 
