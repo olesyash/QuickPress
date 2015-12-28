@@ -15,7 +15,7 @@ public class DAL {
     //Define variables
     private DBHelper dbHelper;
     private SQLiteDatabase db;
-
+    private static final int ERROR = -1;
     public DAL(Context context) {
         dbHelper = new DBHelper(context);
     }
@@ -68,7 +68,7 @@ public class DAL {
             }
             catch (android.database.CursorIndexOutOfBoundsException e){
                 cursor.close();
-                return -1;
+                return ERROR;
             }
     }
 
@@ -87,7 +87,7 @@ public class DAL {
                 return res;
             } catch (android.database.CursorIndexOutOfBoundsException e) {
                 cursor.close();
-                return -1;
+                return ERROR;
             }
     }
 }

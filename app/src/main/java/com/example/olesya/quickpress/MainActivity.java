@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     private static final int MIN_LEVEL = 1, MIN_COMPLEXITY = 0;
     private static final int DELAY = 100 ;
     private static final int DB_ERROR = -1, INIT_TIME = 0;
+    private static final int THOUSAND = 1000, MINUTE = 60;
     //Buttons
     private Button settingsButton, startButton, recentButton, bestButton;
     //Text Views
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(context, SettingsActivity.class); //Goto settings Activity
-            startActivityForResult(intent, 1);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -158,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
 
         if(bestResult == DB_ERROR || currentResult == DB_ERROR) { //One of the lines missing in DB
             first = true; //Flag that shows us it's the first time for current game (level+complexity)
-            bestResult = 0;
-            currentResult = 0;
+            bestResult = INIT_TIME;
+            currentResult = INIT_TIME;
         }
         //Update text views to show the results
             bestResultTextView.setText(formatStringTime(bestResult));
@@ -169,9 +170,9 @@ public class MainActivity extends AppCompatActivity implements GameInterface{
     //Function to format time to string in following format: ss:xxx xxx = ms
     private String formatStringTime(long millis)
     {
-        int seconds = (int) (millis / 1000);
-        int milliseconds = (int)(millis - seconds*1000);
-        seconds = seconds % 60;
+        int seconds = (int) (millis / THOUSAND);
+        int milliseconds = (int)(millis - seconds*THOUSAND);
+        seconds = seconds % MINUTE;
         return String.format("%d:%03d", seconds, milliseconds);
     }
 

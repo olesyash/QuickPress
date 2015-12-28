@@ -18,6 +18,7 @@ import java.util.Random;
  */
 public class MyView extends View {
     //Define constants
+    private static final int MIN_LEVEL = 1, MIN_COMPLEXITY = 0;
     private final static int POWER = 2;
     private final static float RADIUS = 50;
     private final static float bw = 120, bh = 80;
@@ -117,8 +118,8 @@ public class MyView extends View {
         if(bttn_pressed) { //if start button pressed - the game started - draw
 
             //Get level and complexity
-            level = memory.getInt("level",1);
-            complexity = memory.getInt("complexity",0);
+            level = memory.getInt("level",MIN_LEVEL);
+            complexity = memory.getInt("complexity",MIN_COMPLEXITY);
             //Create arrays in complexity size
             x = new float[complexity+1];
             y = new float[complexity+1];
